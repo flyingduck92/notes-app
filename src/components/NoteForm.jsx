@@ -1,13 +1,47 @@
 import { useState } from 'react'
 
-const NoteForm = () => {
-  const [title, setTitle] = useState('')
-  const [priority, setPriority] = useState('Medium')
-  const [category, setCategory] = useState('Work')
-  const [description, setDescription] = useState('')
+const NoteForm = ({ notes, setNotes }) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    priority: 'Medium',
+    category: 'Work',
+    description: ''
+  })
+
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    // validation
+    if (!formData.title || !formData.description) return
+
+    // create note object
+    const newNote = {
+      id: crypto.randomUUID(),
+      ...formData
+    }
+
+    // Add note
+    setNotes([newNote, ...notes])
+
+    // reset formData
+    setFormData({
+      title: '',
+      priority: 'Medium',
+      category: 'Work',
+      description: ''
+    })
+  }
 
   return (
-    <form className='mb-6'>
+    <form onSubmit={handleSubmit} className='mb-6'>
       <div className="mb-4">
         <label htmlFor="title" className="block font-semibold">
           Title
@@ -16,8 +50,8 @@ const NoteForm = () => {
           className="w-full rounded-lg p-2 border"
           id="title"
           name="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={formData.title}
+          onChange={handleChange}
         />
       </div>
       <div className="mb-4 relative">
@@ -28,8 +62,8 @@ const NoteForm = () => {
           className="w-full border rounded-lg p-2 appearance-none"
           id="priority"
           name="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
+          value={formData.priority}
+          onChange={handleChange}
         >
           <option value="High">🔴 High</option>
           <option value="Medium">🟡 Medium</option>
@@ -48,8 +82,8 @@ const NoteForm = () => {
           className="w-full border rounded-lg p-2 appearance-none"
           id="category"
           name="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={formData.category}
+          onChange={handleChange}
         >
           <option value="Work">🏢 Work</option>
           <option value="Personal">🏠 Personal</option>
@@ -68,8 +102,9 @@ const NoteForm = () => {
           className="w-full rounded-lg p-2 border"
           id="description"
           name="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}>
+          value={formData.description}
+          onChange={handleChange}
+        >
         </textarea>
       </div>
       <button className="w-full bg-purple-500 text-white py-2 rounded-lg cursor-pointer hover:bg-purple-600">
